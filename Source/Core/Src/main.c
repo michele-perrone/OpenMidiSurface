@@ -96,15 +96,64 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI1_Init();
   MX_USB_PCD_Init();
+
   /* USER CODE BEGIN 2 */
+
+  // Initialize the USB Device. Note that this will overwrite any USB settings
+  // that are selected in the Cube configurator (e.g. low power, speed, etc.)
   MX_USB_DEVICE_Init();
+  // Initialize the ring buffer, used for sending and receiving MIDI messages
   openMidiSurface_init();
+  // Initialize the register value corresponding to the first LED
+  // on the STM32F3Discovery board
+  uint32_t reg_value = 256;
+  // Initialize the array of notes. Each time we press the user button, the
+  // next note of the array will be sent as a MIDI message via USB
+  uint8_t notes[12] = {60, 63, 65, 66, 67, 70, 72, 70, 67, 66, 65, 63};
+  uint8_t note_idx = 0; // Current note index
+  uint8_t vel = 64; // Default note velocity
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  /* If the button has been pressed down... */
+	  if (HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0) == 1)
+	  {
+		/* Turn on a LED and send the note on */
+		GPIOE->BSRR = reg_value;
+		sendNoteOn(0, notes[note_idx], vel);
+		processMidiMessage();
+		/* And if I KEEP pressing it down ... */
+		while (HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0) != 0)
+		{
+			/* ... do some sleep until the button is released. */
+			HAL_Delay(50);
+		}
+		/* Once the button is released, keep the LED running... */
+		while (HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0) == 0)
+		{
+			/* ... and do some sleep until the button is pressed again. */
+			HAL_Delay(50);
+		}
+
+		/* Turn on the next LED. */
+		GPIOE->BSRR = reg_value << 16;
+		reg_value <<= 1;
+		if (reg_value == 65536)
+		{
+			reg_value = 256;
+		}
+		/* Send noteOff for the old note noteOn for the new note */
+		sendNoteOff(0, notes[note_idx]);
+		processMidiMessage();
+		HAL_Delay(10);
+		note_idx++;
+		if(note_idx > 11)
+			note_idx = 0;
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
