@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "usb_device.h"
+#include "usbd_midi_if.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,7 +97,8 @@ int main(void)
   MX_SPI1_Init();
   MX_USB_PCD_Init();
   /* USER CODE BEGIN 2 */
-
+  MX_USB_DEVICE_Init();
+  openMidiSurface_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
