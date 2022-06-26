@@ -61,6 +61,7 @@ NVIC.PendSV_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:true
 NVIC.PriorityGroup=NVIC_PRIORITYGROUP_0
 NVIC.SVCall_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:true
 NVIC.SysTick_IRQn=true\:0\:0\:true\:false\:true\:true\:true\:true
+NVIC.USB_LP_CAN_RX0_IRQn=true\:0\:0\:false\:false\:true\:true\:true\:true
 NVIC.UsageFault_IRQn=true\:0\:0\:false\:false\:true\:true\:false\:true
 PA0.GPIOParameters=GPIO_Label
 PA0.GPIO_Label=B1 [Blue PushButton]
